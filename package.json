@@ -1,0 +1,18 @@
+{
+  "name": "gif-fixer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "fixer.js",
+  "dependencies": {
+    "gifsicle": "^3.0.4",
+    "glob": "^7.1.2",
+    "imagemagick": "^0.1.3",
+    "node-gd": "^1.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
