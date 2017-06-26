@@ -92,14 +92,23 @@ const fix = function(inputFile, outputFile) {
 }
 
 // Run it on one file at a time, otherwise memory could run out
-files.reduce(
-  (promise, file) => {
-    return promise.then(
-      () => fix(
-        file,
-        `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
-      )
-    );
-  },
-  Promise.resolve()
-);
+if (files.length === 1) {
+  const file = files[0];
+  console.log('file', file);
+  fix(
+    file,
+    `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
+  );
+} else {
+  files.reduce(
+    (promise, file) => {
+      return promise.then(
+        () => fix(
+          file,
+          `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
+        )
+      );
+    },
+    Promise.resolve()
+  );
+}
