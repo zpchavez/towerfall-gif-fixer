@@ -1,13 +1,19 @@
 #!/usr/bin/env node
+const exec = require('child_process').exec;
+const gifsicle = require('gifsicle');
 const im = require('imagemagick');
-const glob = require('glob');
-// const argv = require('minimist')(process.argv.slice(2));
+const argv = process.argv;
 
-const inputGlob = process.argv[2];
-const targetDir = process.argv[3];
+const files = [];
+for (let i = 2; i < argv.length - 1; i += 1) {
+  files.push(argv[i]);
+}
 
-if (!inputGlob) {
-  console.log('Missing input file');
+const inputGlob = argv[2];
+const targetDir = argv[argv.length - 1];
+
+if (files.length === 0) {
+  console.log('No input files specified');
   process.exit(1);
 }
 
@@ -15,21 +21,6 @@ if (!targetDir) {
   console.log('Missing target dir');
   process.exit(1);
 }
-
-// Get pixel all along the bottom. If they are all black, remove the frame.
-
-glob(inputGlob, (err, files) => {
-  if (err) {
-    throw err;
-  }
-
-  files.forEach(
-    file => fix(
-      file,
-      `${targetDir}/${file.substr(file.lastIndexOf('/'))}`
-    )
-  )
-});
 
 const getBadFramesForFile = function(inputFile) {
   return new Promise((resolve, reject) => {
@@ -45,7 +36,7 @@ const getBadFramesForFile = function(inputFile) {
       }
       Promise.all(xPositions.map(x => {
         return new Promise((resolve) =>
-          im.convert([inputFile, '-crop', `1x1+${x}+${height-1}`, 'txt:-'], (err, stdout, stderr) => {
+          im.convert([inputFile, '-crop', `1x1+${x}+${height-40}`, 'txt:-'], (err, stdout, stderr) => {
             if (err) {
               reject(err);
             }
@@ -81,7 +72,34 @@ const getBadFramesForFile = function(inputFile) {
 }
 
 const fix = function(inputFile, outputFile) {
-  getBadFramesForFile(inputFile).then(badFrames => {
-    console.log('bad frames', badFrames);
+  return getBadFramesForFile(inputFile).then(badFrames => {
+    let args = [inputFile, '--delete'];
+    args = args.concat(
+      badFrames.map(frame => `"#${frame}"`)
+    );
+    args.push('--done');
+    args.push('>');
+    args.push(outputFile);
+    exec(`${gifsicle} ${args.join(' ')}`, { maxBuffer: Infinity }, (err, stdout) => {
+      if (err) {
+        console.log(err);
+        process.exit(1);
+      } else {
+        console.log(`Fixed ${inputFile}`);
+      }
+    })
   });
 }
+
+// Run it on one file at a time, otherwise memory could run out
+files.reduce(
+  (promise, file) => {
+    return promise.then(
+      () => fix(
+        file,
+        `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
+      )
+    );
+  },
+  Promise.resolve()
+);
