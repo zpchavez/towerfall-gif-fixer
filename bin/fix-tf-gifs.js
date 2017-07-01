@@ -32,11 +32,18 @@ if (files.length === 1) {
   files.reduce(
     (promise, file) => {
       return promise.then(
-        () => fix(
-          file,
-          `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
-        )
-      );
+        () => {
+          return fix(
+            file,
+            `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
+          ).then((fixedFile) => {
+            console.log(`Exported ${fixedFile}`);
+          })
+        }
+      ).catch(err => {
+        console.log(err);
+        process.exit(1);
+      });
     },
     Promise.resolve()
   );
