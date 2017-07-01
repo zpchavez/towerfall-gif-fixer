@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Fix glitched out 8-player TowerFall gifs by removing offset frames",
   "main": "lib/tf-gif-fixer.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zpchavez/towerfall-gif-fixer.git"
+  },
   "dependencies": {
     "gifsicle": "^3.0.4",
     "imagemagick": "^0.1.3"
