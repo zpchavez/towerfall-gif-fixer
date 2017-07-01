@@ -37,7 +37,11 @@ if (files.length === 1) {
             file,
             `${targetDir}/fixed-${file.substr(file.lastIndexOf('/') + 1)}`
           ).then((fixedFile) => {
-            console.log(`Exported ${fixedFile}`);
+            if (fixedFile === file) {
+              console.log(`File was already good: ${file}`);
+            } else {
+              console.log(`Exported fixed file: ${fixedFile}`);
+            }
           })
         }
       ).catch(err => {
