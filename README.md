@@ -1,3 +1,7 @@
+# Note
+
+This utility is obsolete. We now fix our gifs with a custom mod. It's a much better solution that doesn't cut out any frames. See https://github.com/zpchavez/Bartizan.
+
 ## TowerFall GIF Fixer
 
 This utility "fixes" the glitched out replay gifs exported by the
